@@ -1,0 +1,928 @@
+<meta charset="utf-8">
+<title>Urnas de 2026</title>
+<meta name="claude:viewport-fit-sides" content="cover">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Bricolage+Grotesque:opsz,wght@12..96,400;12..96,500;12..96,600;12..96,700&family=Newsreader:opsz,wght@6..72,400;6..72,600;6..72,700&display=swap">
+<style>
+/* Folha de caderno de "O Brasil em mapas" (D-018): papel, margem vermelha, serifa nos títulos, tinta preta.
+   Palco com mapa à esquerda e cartão do lugar à direita; embaixo, a passagem do 1º para o 2º turno e a tabela.
+   Claro por padrão; o escuro só entra pelo botão (ou pela escolha explícita do leitor). */
+:root {
+  --papel: #f4eee3;
+  --papel-2: #ebe2d2;
+  --claro: #fbf8f2;
+  --fio: #d6cab6;
+  --tinta: #1d1a16;
+  --tinta-2: #3d362d;
+  --vermelho: #b8141c;
+  --marca: #f6d27a;
+  --land: #e4dac8;
+  --outros: #9a8f80;
+  --sobe: #1f7f86;
+  --cai: #b5651d;
+  --p1: #C62F3B; --p2: #2463B0; --p3: #C98A0C; --p4: #2E8A5A; --p5: #7B52B8;
+  --g1: #00927E; --g2: #D2691E; --g3: #8E4A9E; --g4: #6E8B1E; --g5: #C2447A;
+  --f-texto: "Newsreader", Georgia, "Times New Roman", serif;
+  --f-ui: "Bricolage Grotesque", "Trebuchet MS", "Helvetica Neue", Arial, sans-serif;
+  --w: 43rem;
+  --w-palco: 76rem;
+  color-scheme: light;
+}
+:root[data-theme="dark"] {
+  --papel: #1b1916; --papel-2: #26231f; --claro: #211f1b; --fio: #3d382f; --tinta: #efe8db; --tinta-2: #d6ccbc;
+  --vermelho: #e5483f; --marca: #c9a24a; --land: #2e2a25; --outros: #81786b; --sobe: #3fa7ad; --cai: #d08a3c;
+  --p1: #D9483B; --p2: #4A86D4; --p3: #B8841A; --p4: #3FA672; --p5: #9878D8;
+  --g1: #2AA3A8; --g2: #D06C22; --g3: #B072C2; --g4: #7A962A; --g5: #E0629A;
+  color-scheme: dark;
+}
+* { box-sizing: border-box; }
+html, body { background: var(--papel); margin: 0; }
+body { color: var(--tinta); font-family: var(--f-texto); font-size: 1.0625rem; line-height: 1.5;
+  padding-left: max(16px, env(safe-area-inset-left, 0px)); padding-right: max(16px, env(safe-area-inset-right, 0px)); padding-block: 0 4rem; }
+.pagina { max-width: var(--w-palco); margin: 0 auto; display: grid; grid-template-columns: minmax(0, 1fr); }
+h1, h2, h3 { text-wrap: balance; margin: 0; }
+p { margin: 0; }
+b, strong { font-weight: 600; }
+button, select, input { font: inherit; color: inherit; }
+:focus-visible { outline: 3px solid var(--marca); outline-offset: 2px; }
+.num { font-variant-numeric: lining-nums tabular-nums; }
+
+/* cabeçalho em folha de caderno */
+.caderno { position: relative; padding: 2.2rem 1rem 1.6rem 1.6rem; margin-inline: -1rem;
+  background-image: repeating-linear-gradient(to bottom, transparent 0, transparent 1.95rem, var(--fio) 1.95rem, var(--fio) 2rem);
+  border-bottom: 2px solid var(--tinta); }
+.caderno::before { content: ""; position: absolute; top: 0; bottom: 0; left: .8rem; width: 2px; background: var(--vermelho); opacity: .75; }
+.cabeca { display: grid; gap: .8rem; max-width: var(--w); padding-right: 7rem; }
+.selo { font-family: var(--f-ui); font-size: .95rem; font-weight: 700; color: var(--vermelho); }
+h1 { font-size: clamp(2.3rem, 6.6vw, 3.4rem); line-height: 1.02; font-weight: 700; letter-spacing: -.015em; }
+.linha-fina { font-family: var(--f-ui); font-size: 1.1rem; line-height: 1.5; font-weight: 500; max-width: 36rem; }
+.data { font-family: var(--f-ui); font-size: .85rem; }
+#tema { position: absolute; right: 1rem; top: 1.2rem; font-family: var(--f-ui); font-size: .85rem; font-weight: 600;
+  background: var(--claro); border: 2px solid var(--tinta); border-radius: 999px; padding: .3rem .8rem; cursor: pointer; display: inline-flex; gap: .4rem; align-items: center; }
+#tema svg { width: 1rem; height: 1rem; }
+@media (max-width: 34rem) { .cabeca { padding-right: 0; } #tema { position: static; justify-self: start; } }
+
+/* controles */
+.controles { margin-top: 1.4rem; display: flex; flex-wrap: wrap; gap: 1rem 1.6rem; align-items: end; font-family: var(--f-ui); }
+.rotulo { display: block; font-family: var(--f-ui); font-size: .9rem; font-weight: 700; margin-bottom: .35rem; }
+.abas { display: flex; flex-wrap: wrap; gap: .4rem; }
+.abas button { font-family: var(--f-ui); font-size: .92rem; font-weight: 600; padding: .4rem .85rem; border: 2px solid var(--tinta); border-radius: 999px; background: transparent; cursor: pointer; }
+.abas button[aria-pressed="true"] { background: var(--tinta); color: var(--papel); }
+.abas button:disabled { opacity: .35; cursor: not-allowed; }
+.campo { font-family: var(--f-ui); font-size: 1rem; padding: .5rem .8rem; border: 2px solid var(--tinta); border-radius: 6px; background: var(--claro); }
+.busca { position: relative; flex: 1 1 16rem; max-width: 22rem; }
+.busca .campo { width: 100%; }
+.sugestoes { position: absolute; z-index: 6; left: 0; right: 0; top: calc(100% - 2px); margin: 0; padding: 0; list-style: none; background: var(--claro);
+  border: 2px solid var(--tinta); border-radius: 0 0 6px 6px; max-height: 18rem; overflow-y: auto; }
+.sugestoes li { padding: .5rem .8rem; cursor: pointer; display: flex; justify-content: space-between; gap: 1rem; }
+.sugestoes li[aria-selected="true"], .sugestoes li:hover { background: var(--papel-2); }
+
+/* o que o mapa mostra */
+.modos { margin-top: 1.6rem; display: flex; flex-wrap: wrap; gap: .3rem 1.4rem; font-family: var(--f-ui); font-size: 1rem; font-weight: 700; border-bottom: 1px solid var(--fio); }
+.modos button { background: none; border: 0; cursor: pointer; padding: .45rem 0 .55rem; border-bottom: 3px solid transparent; margin-bottom: -1px; font-weight: 700; }
+.modos button[aria-pressed="true"] { border-bottom-color: var(--vermelho); }
+.modos button:not([aria-pressed="true"]):hover { border-bottom-color: var(--fio); }
+.modos .curto { display: none; }
+.modos button:disabled { opacity: .35; cursor: not-allowed; }
+
+.trilha { margin-top: 1rem; font-family: var(--f-ui); font-size: .95rem; font-weight: 600; display: flex; flex-wrap: wrap; gap: .2rem .45rem; align-items: center; min-height: 1.9rem; }
+.trilha button { background: none; border: 0; padding: 0; cursor: pointer; text-decoration: underline; text-decoration-color: var(--vermelho); text-underline-offset: 3px; font-weight: 600; }
+
+#corpo { display: grid; grid-template-columns: minmax(0, 1fr); gap: 3rem; margin-top: .4rem; }
+.carregando { padding: 4rem 0; font-family: var(--f-ui); }
+
+/* palco */
+.palco { display: grid; grid-template-columns: minmax(0, 1.6fr) minmax(17rem, 1fr); gap: 2rem; align-items: start; }
+@media (max-width: 56rem) { .palco { grid-template-columns: minmax(0, 1fr); } }
+.mapa-caixa { display: grid; gap: .6rem; min-width: 0; }
+.manchete { display: grid; gap: .3rem; }
+.manchete h2 { font-size: clamp(1.5rem, 3.6vw, 2.1rem); line-height: 1.12; font-weight: 700; }
+.manchete p { font-family: var(--f-ui); font-size: .95rem; line-height: 1.45; }
+.barra-mapa { display: flex; justify-content: flex-end; }
+.chave { font-family: var(--f-ui); font-size: .82rem; font-weight: 600; background: none; border: 0; padding: 0; cursor: pointer; text-decoration: underline; text-decoration-color: var(--vermelho); text-underline-offset: 3px; }
+#mapa { width: 100%; height: auto; display: block; touch-action: manipulation; }
+#mapa path.mun { stroke: var(--claro); stroke-width: .25; cursor: pointer; }
+#mapa path.mun:hover { stroke: var(--tinta); stroke-width: 1.2; }
+#mapa path.mun.sel { stroke: var(--tinta); stroke-width: 2.2; }
+#mapa path.uf { stroke: var(--papel); stroke-width: 1.2; cursor: pointer; }
+#mapa path.uf:hover { stroke: var(--tinta); stroke-width: 1.8; }
+#mapa path.divisa { fill: none; stroke: var(--tinta); stroke-opacity: .6; stroke-width: .7; pointer-events: none; }
+#mapa text.sigla { font-family: var(--f-ui); font-size: 11px; font-weight: 700; fill: var(--tinta); paint-order: stroke; stroke: var(--claro); stroke-width: 3px; stroke-linejoin: round; pointer-events: none; }
+.sem-mapa { padding: 3rem 1rem; font-family: var(--f-ui); background: var(--claro); border-radius: 6px; }
+
+.legenda { font-family: var(--f-ui); font-size: .85rem; display: grid; gap: .5rem; }
+.legenda .itens { display: flex; flex-wrap: wrap; gap: .4rem 1.2rem; }
+.legenda .item { display: inline-flex; gap: .4rem; align-items: center; }
+.rampa { display: inline-flex; gap: 2px; }
+.rampa i { width: 12px; height: 12px; display: block; border-radius: 2px; }
+.g-titulo { font-weight: 700; font-size: .88rem; }
+.polos { display: flex; justify-content: space-between; font-size: .8rem; font-weight: 600; }
+.faixas { display: grid; grid-template-columns: repeat(7, minmax(0, 1fr)); gap: 2px; max-width: 30rem; }
+.faixas div { display: grid; gap: .2rem; }
+.faixas i { display: block; height: .75rem; }
+.faixas div:first-child i { border-radius: 4px 0 0 4px; }
+.faixas div:last-child i { border-radius: 0 4px 4px 0; }
+.faixas span { font-size: .74rem; line-height: 1.2; font-variant-numeric: tabular-nums; }
+
+/* cartão do lugar */
+.cartao { display: grid; gap: 1.1rem; font-family: var(--f-ui); min-width: 0; }
+@media (min-width: 56.01rem) { .cartao { position: sticky; top: calc(1rem + env(safe-area-inset-top, 0px)); } }
+.cartao h3 { font-family: var(--f-texto); font-size: clamp(1.7rem, 4.6vw, 2.2rem); line-height: 1.04; font-weight: 700; }
+.cartao .sub { font-size: .95rem; font-weight: 600; }
+.destaque { display: flex; align-items: flex-end; gap: .4rem 1rem; flex-wrap: wrap; }
+.grande { font-family: var(--f-texto); font-weight: 700; font-size: clamp(2.6rem, 8vw, 3.5rem); line-height: .9; color: var(--vermelho); font-variant-numeric: lining-nums tabular-nums; }
+.destaque span:last-child { font-size: .95rem; font-weight: 500; max-width: 14rem; }
+.cands { display: grid; gap: .8rem; }
+.cand { display: grid; grid-template-columns: 1fr auto; gap: .15rem .8rem; }
+.cand .nome { font-weight: 700; display: flex; flex-wrap: wrap; gap: .3rem; align-items: baseline; min-width: 0; }
+.cand .nome small { font-weight: 500; }
+.cand .pct { font-weight: 700; text-align: right; }
+.cand .barra { grid-column: 1 / -1; height: .6rem; background: var(--land); border-radius: 0 4px 4px 0; overflow: hidden; }
+.cand .barra i { display: block; height: 100%; border-radius: 0 4px 4px 0; }
+.cand .votos { grid-column: 1 / -1; font-size: .85rem; }
+.etiqueta { font-size: .7rem; font-weight: 700; letter-spacing: .04em; text-transform: uppercase; padding: .05rem .45rem; border-radius: 999px; background: var(--tinta); color: var(--papel); }
+.mais { background: none; border: 0; padding: 0; cursor: pointer; text-decoration: underline; text-decoration-color: var(--vermelho); text-underline-offset: 3px; font-family: var(--f-ui); font-size: .9rem; font-weight: 600; justify-self: start; }
+.quadro { display: grid; grid-template-columns: repeat(4, minmax(0, 1fr)); border-top: 2px solid var(--tinta); border-bottom: 1px solid var(--fio); }
+.quadro > div { padding: .55rem .4rem; display: grid; gap: .1rem; }
+.quadro > div + div { border-left: 1px solid var(--fio); }
+.quadro b { font-size: 1.1rem; font-weight: 700; }
+.quadro small { font-size: .78rem; font-weight: 600; }
+@media (max-width: 30rem) { .quadro { grid-template-columns: repeat(2, minmax(0, 1fr)); } .quadro > div:nth-child(3) { border-left: 0; } }
+.nota { font-family: var(--f-ui); font-size: .85rem; line-height: 1.45; }
+
+/* do 1º para o 2º turno */
+.turnos { display: grid; gap: 1.2rem; }
+.turnos > header { display: grid; gap: .35rem; max-width: var(--w); border-top: 2px solid var(--tinta); padding-top: .9rem; }
+.turnos h2 { font-size: clamp(1.5rem, 3.6vw, 2.1rem); line-height: 1.12; }
+.turnos header p { font-family: var(--f-ui); font-size: .98rem; }
+.duas { display: grid; grid-template-columns: minmax(0, 1fr) minmax(0, 1.35fr); gap: 2.4rem; align-items: start; }
+@media (max-width: 56rem) { .duas { grid-template-columns: minmax(0, 1fr); } }
+.conta { width: 100%; border-collapse: collapse; font-family: var(--f-ui); font-size: .95rem; }
+.conta td { padding: .5rem .3rem; border-bottom: 1px solid var(--fio); vertical-align: middle; }
+.conta td.v { text-align: right; font-weight: 700; white-space: nowrap; width: 7.5rem; }
+.conta td.b { width: 40%; }
+.conta tr.soma td { border-top: 2px solid var(--tinta); font-weight: 700; }
+.conta .tira { height: .7rem; border-radius: 2px; }
+.halter { width: 100%; height: auto; display: block; }
+.halter text, .disp text { font-family: var(--f-ui); font-size: 12px; fill: var(--tinta-2); }
+.halter text.forte { fill: var(--tinta); font-weight: 700; }
+.halter line.grade, .disp line.grade { stroke: var(--fio); }
+.disp { width: 100%; height: auto; display: block; }
+.disp line.zero { stroke: var(--tinta); stroke-width: 1; }
+.disp circle { cursor: pointer; }
+.disp circle:hover { stroke: var(--tinta); stroke-width: 1.5; }
+.disp text.eixo { font-weight: 700; fill: var(--tinta); }
+.frase { font-family: var(--f-ui); font-size: 1rem; font-weight: 500; }
+.frase b { font-weight: 700; }
+
+/* tabela */
+.tabela-box { display: grid; gap: .8rem; min-width: 0; }
+.tabela-topo { display: flex; flex-wrap: wrap; gap: .6rem 1.4rem; justify-content: space-between; align-items: end; border-top: 2px solid var(--tinta); padding-top: .9rem; }
+.tabela-topo h2 { font-size: clamp(1.4rem, 3.2vw, 1.8rem); }
+.rolagem { overflow-x: auto; }
+table.dados { border-collapse: collapse; width: 100%; font-family: var(--f-ui); font-size: .92rem; }
+table.dados th, table.dados td { padding: .45rem .6rem; text-align: right; border-bottom: 1px solid var(--fio); white-space: nowrap; }
+table.dados th:first-child, table.dados td:first-child, table.dados .esq { text-align: left; }
+table.dados th { font-size: .8rem; font-weight: 700; border-bottom: 2px solid var(--tinta); }
+table.dados th button { background: none; border: 0; padding: 0; cursor: pointer; font-weight: 700; }
+table.dados th button[aria-sort]::after { content: " ↓"; }
+table.dados th button[aria-sort="ascending"]::after { content: " ↑"; }
+table.dados tbody tr { cursor: pointer; }
+table.dados tbody tr:hover { background: var(--papel-2); }
+.ponto { display: inline-block; width: .6rem; height: .6rem; border-radius: 50%; margin-right: .4rem; }
+
+/* celular */
+@media (max-width: 40rem) {
+  body { font-size: 1rem; }
+  .caderno { padding: 1.6rem 1rem 1.2rem 1.4rem; }
+  .controles { gap: .9rem 1.2rem; }
+  .controles > div:nth-child(3), .controles .busca { flex: 1 1 100%; max-width: none; }
+  .controles select.campo { width: 100%; }
+  .abas button { padding: .45rem .75rem; }
+  .modos { flex-wrap: nowrap; overflow-x: auto; scrollbar-width: none; margin-inline: -16px; padding-inline: 16px; }
+  .modos::-webkit-scrollbar { display: none; }
+  .modos { gap: 1.1rem; font-size: .95rem; }
+  .modos button { white-space: nowrap; }
+  .modos .longo { display: none; }
+  .modos .curto { display: inline; }
+  .palco { gap: 1.4rem; }
+  .manchete h2, .turnos h2 { font-size: 1.45rem; }
+  .duas { gap: 1.6rem; }
+  .conta { font-size: .88rem; }
+  .conta td.b { width: 28%; }
+  .conta td.v { width: auto; }
+  .opc { display: none; }
+  table.dados { font-size: .85rem; }
+  table.dados th, table.dados td { padding: .45rem .45rem; }
+  table.dados td:first-child, table.dados th:first-child { position: sticky; left: 0; background: var(--papel); z-index: 1; max-width: 9.5rem; overflow: hidden; text-overflow: ellipsis; }
+  .tabela-topo .campo { width: 100%; }
+}
+#dica { position: fixed; z-index: 10; pointer-events: none; background: var(--tinta); color: var(--papel); font-family: var(--f-ui); font-size: .82rem; line-height: 1.45;
+  padding: .5rem .65rem; border-radius: 6px; max-width: 17rem; }
+#dica b { display: block; margin-bottom: .2rem; }
+#dica .linha { display: flex; justify-content: space-between; gap: 1rem; }
+footer { margin-top: 3rem; border-top: 1px solid var(--fio); padding-top: .9rem; font-family: var(--f-ui); font-size: .85rem; display: grid; gap: .5rem; max-width: 52rem; }
+@media (prefers-reduced-motion: reduce) { * { scroll-behavior: auto !important; } }
+</style>
+
+<div class="pagina">
+  <header class="caderno">
+    <div class="cabeca">
+      <span class="selo">Eleições gerais de 2026</span>
+      <h1>Urnas de 2026</h1>
+      <p class="linha-fina">O resultado oficial de presidente e governador, nos dois turnos, por estado e por município. E o que mudou de um turno para o outro.</p>
+      <span class="data">1º turno em 4 de outubro, 2º turno em 25 de outubro. Dados do TSE com todas as seções apuradas.</span>
+    </div>
+    <button id="tema" aria-pressed="false"></button>
+  </header>
+
+  <div class="controles">
+    <div><span class="rotulo" id="r-cargo">Cargo</span>
+      <div class="abas" role="group" aria-labelledby="r-cargo">
+        <button id="c-p" data-cargo="p" aria-pressed="true">Presidente</button>
+        <button id="c-g" data-cargo="g" aria-pressed="false">Governador</button>
+      </div></div>
+    <div><span class="rotulo" id="r-turno">Turno</span>
+      <div class="abas" role="group" aria-labelledby="r-turno">
+        <button id="t-1" data-turno="1" aria-pressed="false">1º turno</button>
+        <button id="t-2" data-turno="2" aria-pressed="true">2º turno</button>
+      </div></div>
+    <div><label class="rotulo" for="sel-uf">Estado</label>
+      <select id="sel-uf" class="campo"></select></div>
+    <div class="busca"><label class="rotulo" for="busca">Município</label>
+      <input type="search" id="busca" class="campo" placeholder="Digite o nome da cidade" autocomplete="off" role="combobox" aria-expanded="false" aria-controls="sugestoes">
+      <ul class="sugestoes" id="sugestoes" role="listbox" hidden></ul></div>
+  </div>
+
+  <nav class="modos" aria-label="O que o mapa mostra">
+    <button id="m-res" data-modo="res" aria-pressed="true">Resultado</button>
+    <button id="m-comp" data-modo="comp" aria-pressed="false">Comparecimento<span class="longo"> entre turnos</span></button>
+    <button id="m-saldo" data-modo="saldo" aria-pressed="false"><span class="longo">Quem ganhou mais votos no 2º turno</span><span class="curto">Saldo de votos</span></button>
+  </nav>
+
+  <nav class="trilha" id="trilha" aria-label="Onde você está"></nav>
+
+  <div id="corpo" class="carregando">Carregando os resultados…</div>
+
+  <footer>
+    <p>Fonte: TSE, arquivos de divulgação de resultados (resultados.tse.jus.br), eleições 6257 e 6258 (presidente) e 6259 e 6260 (governador), baixados em 26/10/2026 com 100% das seções totalizadas. A soma dos municípios confere com o total oficial de cada estado e do país.</p>
+    <p>Percentuais de candidato sobre os votos válidos, como o TSE divulga. Comparecimento sobre o eleitorado. O total do Brasil para presidente inclui o exterior, que não tem mapa. Boa Esperança do Norte (MT) foi criada depois do Censo 2022, não tem contorno na malha do IBGE e aparece só na tabela.</p>
+    <p>Votos ganhos de um turno para o outro são a diferença simples entre os votos do candidato no 2º e no 1º turno no mesmo lugar. O dado não diz quem votou em quem, só o saldo de cada lugar.</p>
+  </footer>
+</div>
+<div id="dica" hidden></div>
+
+<script src="https://cdnjs.cloudflare.com/ajax/libs/d3/7.9.0/d3.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/topojson/3.0.2/topojson.min.js"></script>
+<script>
+const UFS = {ac:"Acre",al:"Alagoas",am:"Amazonas",ap:"Amapá",ba:"Bahia",ce:"Ceará",df:"Distrito Federal",es:"Espírito Santo",go:"Goiás",ma:"Maranhão",mg:"Minas Gerais",ms:"Mato Grosso do Sul",mt:"Mato Grosso",pa:"Pará",pb:"Paraíba",pe:"Pernambuco",pi:"Piauí",pr:"Paraná",rj:"Rio de Janeiro",rn:"Rio Grande do Norte",ro:"Rondônia",rr:"Roraima",rs:"Rio Grande do Sul",sc:"Santa Catarina",se:"Sergipe",sp:"São Paulo",to:"Tocantins",zz:"Exterior"};
+const fmt = new Intl.NumberFormat("pt-BR");
+const fmtP = new Intl.NumberFormat("pt-BR", {minimumFractionDigits: 1, maximumFractionDigits: 1});
+const fmtP2 = new Intl.NumberFormat("pt-BR", {minimumFractionDigits: 2, maximumFractionDigits: 2});
+const pct = x => fmtP.format(x * 100) + "%";
+const sinal = x => (x > 0 ? "+" : x < 0 ? "−" : "") + fmt.format(Math.abs(x));
+const sinalP = x => (x > 0 ? "+" : x < 0 ? "−" : "") + fmtP.format(Math.abs(x));
+function milhoes(x) {
+  const a = Math.abs(x);
+  if (a >= 1e6) return fmtP.format(a / 1e6) + (a >= 2e6 ? " milhões" : " milhão");
+  if (a >= 1e4) return fmt.format(Math.round(a / 1e3)) + " mil";
+  return fmt.format(a);
+}
+const votos = x => milhoes(x) + (Math.abs(x) >= 1e6 ? " de votos" : " votos");
+const MINUSC = new Set(["da","de","do","das","dos","e","d"]);
+function tc(s) {
+  return s.toLowerCase().split(/(\s+|-)/).map((w, i) => {
+    if (i > 0 && MINUSC.has(w)) return w;
+    if (/^d'/.test(w)) return "D'" + (w[2] || "").toUpperCase() + w.slice(3);
+    return w.charAt(0).toUpperCase() + w.slice(1);
+  }).join("");
+}
+const norm = s => s.toLowerCase().normalize("NFD").replace(/\p{Diacritic}/gu, "");
+const $ = s => document.querySelector(s);
+
+let D, TOPO, ufMuns = new Map(), ufGeo = [], ibgeIdx = new Map(), indiceBusca = [];
+const S = {cargo: "p", turno: 2, uf: null, mun: null, modo: "res", sort: {col: "te", dir: -1}, filtro: "", limite: 50, verTodos: false, todosCands: false};
+
+/* ---------- tema ---------- */
+function lerTema() { try { return localStorage.getItem("urnas-tema"); } catch (e) { return null; } }
+function aplicarTema(t) {
+  if (t === "dark") document.documentElement.setAttribute("data-theme", "dark");
+  else document.documentElement.setAttribute("data-theme", "light");
+  const escuro = t === "dark", b = $("#tema");
+  b.setAttribute("aria-pressed", escuro);
+  b.innerHTML = escuro
+    ? `<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" aria-hidden="true"><circle cx="12" cy="12" r="4"/><path d="M12 2v2M12 20v2M4.9 4.9l1.4 1.4M17.7 17.7l1.4 1.4M2 12h2M20 12h2M4.9 19.1l1.4-1.4M17.7 6.3l1.4-1.4"/></svg>Modo claro`
+    : `<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M21 12.8A9 9 0 1 1 11.2 3a7 7 0 0 0 9.8 9.8z"/></svg>Modo escuro`;
+}
+aplicarTema(lerTema() === "dark" ? "dark" : "light");
+$("#tema").onclick = () => {
+  const t = document.documentElement.getAttribute("data-theme") === "dark" ? "light" : "dark";
+  try { localStorage.setItem("urnas-tema", t); } catch (e) {}
+  aplicarTema(t);
+};
+
+/* ---------- cores ---------- */
+function cssVar(n) { return getComputedStyle(document.documentElement).getPropertyValue(n).trim(); }
+let COR = {}, ORDEM_P = [];
+function lerCores() {
+  COR = {claro: cssVar("--claro"), land: cssVar("--land"), outros: cssVar("--outros"), tinta2: cssVar("--tinta-2"),
+    sobe: cssVar("--sobe"), cai: cssVar("--cai"),
+    p: [1,2,3,4,5].map(i => cssVar("--p" + i)), g: [1,2,3,4,5].map(i => cssVar("--g" + i))};
+}
+/* presidente: finalistas na ordem do 2º turno, depois os demais na do 1º; governador: ordem do 1º turno na UF */
+function corCand(cargo, uf, n) {
+  let i;
+  if (cargo === "p") i = ORDEM_P.indexOf(n);
+  else { const ref = D.corridas.g1[uf]; i = ref ? ref.cand.findIndex(c => c[0] === n) : -1; }
+  return i >= 0 && i < 5 ? COR[cargo][i] : COR.outros;
+}
+const mistura = (cor, t) => d3.interpolateLab(COR.claro, cor)(t);
+
+/* ---------- dados ---------- */
+function corrida(cargo, turno, uf) {
+  if (cargo === "p") return D.corridas["p" + turno];
+  return uf ? (D.corridas["g" + turno][uf] || null) : null;
+}
+function linha(c, cargo, uf, mun) {
+  if (!c) return null;
+  if (mun != null) return c.m[mun] || null;
+  if (cargo === "p" && uf) return c.uf[uf] || null;
+  return c.tot;
+}
+function resumo(c, l) {
+  const v = l.slice(4), vv = v.reduce((a, b) => a + b, 0);
+  const cands = c.cand.map((x, i) => ({n: x[0], nm: x[1], sg: x[2], st: x[3], v: v[i], p: vv ? v[i] / vv : 0})).sort((a, b) => b.v - a.v);
+  return {te: l[0], comp: l[1], vb: l[2], vn: l[3], vv, cands};
+}
+function vencedor(c, l) {
+  if (!l) return null;
+  let best = -1, bi = -1, vv = 0;
+  for (let i = 4; i < l.length; i++) { vv += l[i]; if (l[i] > best) { best = l[i]; bi = i - 4; } }
+  return vv ? {n: c.cand[bi][0], p: best / vv} : null;
+}
+function corResultado(cargo, uf, c, l) {
+  const w = vencedor(c, l);
+  if (!w) return COR.land;
+  return mistura(corCand(cargo, uf, w.n), 0.28 + 0.72 * Math.max(0, Math.min(1, (w.p - 0.3) / 0.5)));
+}
+function decisaoGov(uf) {
+  const c2 = D.corridas.g2[uf], c = c2 || D.corridas.g1[uf];
+  if (!c) return null;
+  const r = resumo(c, c.tot);
+  return {turno: c2 ? 2 : 1, eleito: r.cands[0], r};
+}
+
+/* finalistas e a passagem do 1º para o 2º turno */
+function finalistas(cargo, uf) {
+  if (cargo === "p") return {c1: D.corridas.p1, c2: D.corridas.p2};
+  return uf && D.corridas.g2[uf] ? {c1: D.corridas.g1[uf], c2: D.corridas.g2[uf]} : null;
+}
+function delta(f, l1, l2) {
+  if (!l1 || !l2 || !l1[0] || !l2[0]) return null;
+  const [A, B] = f.c2.cand.map(x => x[0]);
+  const v1 = n => l1[4 + f.c1.cand.findIndex(x => x[0] === n)] || 0;
+  const v2 = n => l2[4 + f.c2.cand.findIndex(x => x[0] === n)] || 0;
+  const vv1 = l1.slice(4).reduce((a, b) => a + b, 0);
+  const a1 = v1(A), b1 = v1(B), a2 = v2(A), b2 = v2(B);
+  return {A, B, a1, b1, a2, b2, gA: a2 - a1, gB: b2 - b1, outros1: vv1 - a1 - b1,
+    te1: l1[0], te2: l2[0], c1: l1[1], c2: l2[1], comp1: l1[1] / l1[0], comp2: l2[1] / l2[0],
+    dcomp: 100 * (l2[1] / l2[0] - l1[1] / l1[0]), bn1: l1[2] + l1[3], bn2: l2[2] + l2[3],
+    saldo: (a2 - a1) - (b2 - b1), rel: l2[1] ? ((a2 - a1) - (b2 - b1)) / l2[1] : 0};
+}
+function deltaLugar(cargo, uf, mun) {
+  const f = finalistas(cargo, uf);
+  if (!f) return null;
+  return {f, d: delta(f, linha(f.c1, cargo, uf, mun), linha(f.c2, cargo, uf, mun))};
+}
+let LARG = 560;
+const LIM_COMP = 6, LIM_SALDO = 0.12;
+function corComp(d) {
+  if (!d) return COR.land;
+  const t = Math.max(-1, Math.min(1, d.dcomp / LIM_COMP));
+  return mistura(t >= 0 ? COR.sobe : COR.cai, 0.08 + 0.92 * Math.abs(t));
+}
+function corSaldo(d, cargo, uf) {
+  if (!d) return COR.land;
+  const t = Math.max(-1, Math.min(1, d.rel / LIM_SALDO));
+  return mistura(corCand(cargo, uf, t >= 0 ? d.A : d.B), 0.08 + 0.92 * Math.abs(t));
+}
+const modoDelta = () => S.modo !== "res";
+function nomeCand(c, n) { const x = c.cand.find(y => y[0] === n); return x ? tc(x[1]) : n; }
+
+/* ---------- mapa ---------- */
+function corMun(u, i) {
+  const {cargo, turno} = S;
+  if (i == null) return COR.land;
+  if (modoDelta()) {
+    const f = finalistas(cargo, u);
+    if (!f) return COR.land;
+    const d = delta(f, f.c1.m[i], f.c2.m[i]);
+    return S.modo === "comp" ? corComp(d) : corSaldo(d, cargo, u);
+  }
+  const c = corrida(cargo, turno, u) || (cargo === "g" ? corrida("g", 1, u) : null);
+  return c && c.m[i] ? corResultado(cargo, u, c, c.m[i]) : COR.land;
+}
+function corUF(u) {
+  const {cargo, turno} = S;
+  if (modoDelta()) {
+    const f = finalistas(cargo, u);
+    if (!f) return COR.land;
+    const d = cargo === "p" ? delta(f, f.c1.uf[u], f.c2.uf[u]) : delta(f, f.c1.tot, f.c2.tot);
+    return S.modo === "comp" ? corComp(d) : corSaldo(d, cargo, u);
+  }
+  if (cargo === "p") { const c = corrida("p", turno); return corResultado("p", u, c, c.uf[u]); }
+  const c = turno === 2 ? D.corridas.g2[u] : D.corridas.g1[u];
+  if (!c) return COR.land;
+  /* no país, os candidatos a governador mudam de estado para estado: tom neutro, só a intensidade conta */
+  const w = vencedor(c, c.tot);
+  return mistura(COR.tinta2, 0.28 + 0.72 * Math.max(0, Math.min(1, (w.p - 0.3) / 0.5)));
+}
+function desenharMapa() {
+  const box = $("#mapa-area"), {uf} = S;
+  if (uf === "zz") { box.innerHTML = '<div class="sem-mapa">Os votos no exterior não têm mapa. As cidades estão na tabela abaixo.</div>'; legenda(); return; }
+  box.innerHTML = '<svg id="mapa" viewBox="0 0 600 600" role="img" aria-label="Mapa"></svg>';
+  const s = d3.select("#mapa"), W = 600, H = 600, pad = 10;
+  const nivelMun = uf || S.verTodos;
+  const alvo = {type: "FeatureCollection", features: uf ? (ufMuns.get(uf) || []) : ufGeo};
+  const proj = d3.geoMercator().fitExtent([[pad, pad], [W - pad, H - pad]], alvo);
+  const path = d3.geoPath(proj);
+  const g = s.append("g");
+  if (nivelMun) {
+    const lista = uf ? (ufMuns.get(uf) || []) : [...ufMuns.values()].flat();
+    g.selectAll("path").data(lista).join("path")
+      .attr("class", d => "mun" + (d.properties.idx === S.mun ? " sel" : ""))
+      .attr("d", path).attr("fill", d => corMun(d.properties.uf, d.properties.idx))
+      .on("mousemove", (ev, d) => dicaMun(ev, d.properties.idx))
+      .on("mouseleave", esconderDica)
+      .on("click", (ev, d) => { if (d.properties.idx != null) irMun(d.properties.idx); });
+    const contorno = uf ? {type: "FeatureCollection", features: ufGeo.filter(f => f.properties.sg === uf)} : topojson.mesh(TOPO, TOPO.objects.estados);
+    g.append("path").attr("class", "divisa").attr("d", path(contorno));
+  } else {
+    g.selectAll("path").data(ufGeo).join("path").attr("class", "uf").attr("d", path)
+      .attr("fill", d => corUF(d.properties.sg))
+      .on("mousemove", (ev, d) => dicaUF(ev, d.properties.sg))
+      .on("mouseleave", esconderDica)
+      .on("click", (ev, d) => irUF(d.properties.sg));
+    const k = Math.min(2, Math.max(1, 600 / (box.clientWidth || 600)));
+    g.selectAll("text").data(ufGeo).join("text").attr("class", "sigla").style("font-size", (10 * k).toFixed(1) + "px").style("stroke-width", (3 * k).toFixed(1) + "px").attr("text-anchor", "middle").attr("dy", "0.35em")
+      .attr("transform", d => `translate(${path.centroid(d)})`).text(d => d.properties.sg.toUpperCase());
+  }
+  legenda();
+}
+function faixas(polos, cores, rotulos) {
+  return `<div class="polos" style="max-width:30rem"><span>${polos[0]}</span><span>${polos[1]}</span></div>
+    <div class="faixas">${cores.map((c, k) => `<div><i style="background:${c}"></i><span>${rotulos[k]}</span></div>`).join("")}</div>`;
+}
+function legenda() {
+  const el = $("#legenda");
+  if (!el) return;
+  const {cargo, uf, modo} = S;
+  const passos = [-1, -2 / 3, -1 / 3, 0, 1 / 3, 2 / 3, 1];
+  if (modo === "comp") {
+    el.innerHTML = `<span class="g-titulo">Variação do comparecimento do 1º para o 2º turno, em pontos percentuais</span>` +
+      faixas(["Caiu", "Subiu"], passos.map(t => mistura(t >= 0 ? COR.sobe : COR.cai, 0.08 + 0.92 * Math.abs(t))),
+        passos.map(t => (t === 0 ? "0" : sinalP(t * LIM_COMP)) + (Math.abs(t) === 1 ? " ou mais" : "")));
+    return;
+  }
+  if (modo === "saldo") {
+    const f = finalistas(cargo, uf);
+    if (!f) { el.innerHTML = ""; return; }
+    const [A, B] = f.c2.cand.map(x => x[0]);
+    el.innerHTML = `<span class="g-titulo">Votos ganhos por um menos os ganhos pelo outro, em % de quem votou no 2º turno</span>` +
+      faixas([`${nomeCand(f.c2, B)} ganhou mais`, `${nomeCand(f.c2, A)} ganhou mais`],
+        passos.map(t => mistura(corCand(cargo, uf, t >= 0 ? A : B), 0.08 + 0.92 * Math.abs(t))),
+        passos.map(t => (t === 0 ? "0" : fmtP.format(Math.abs(t) * LIM_SALDO * 100) + "%") + (Math.abs(t) === 1 ? " ou mais" : "")));
+    return;
+  }
+  const amostra = cor => [0.28, 0.52, 0.76, 1].map(t => `<i style="background:${mistura(cor, t)}"></i>`).join("");
+  if (cargo === "g" && !uf) {
+    el.innerHTML = `<span class="g-titulo">Fatia do eleito nos votos válidos</span><div class="itens"><span class="item"><span class="rampa">${amostra(COR.tinta2)}</span>de 30% a 80% ou mais. Clique no estado para ver os candidatos.</span></div>`;
+    return;
+  }
+  const c = corrida(cargo, S.turno, uf) || (cargo === "g" ? corrida("g", 1, uf) : null);
+  const vencedores = new Map();
+  D.mun.forEach((m, i) => {
+    if (uf ? m[3] !== uf : m[3] === "zz") return;
+    const cc = cargo === "p" ? c : (corrida("g", S.turno, m[3]) || corrida("g", 1, m[3]));
+    const w = cc && vencedor(cc, cc.m[i]);
+    if (w) { const k = (cargo === "p" ? "" : m[3]) + w.n; if (!vencedores.has(k)) vencedores.set(k, {n: w.n, u: m[3], c: cc, q: 0}); vencedores.get(k).q++; }
+  });
+  const itens = [...vencedores.values()].sort((a, b) => b.q - a.q).slice(0, 8);
+  el.innerHTML = `<span class="g-titulo">Mais votado em cada ${S.uf || S.verTodos ? "município" : "estado"}. Tom mais forte, vitória mais folgada (de 30% a 80% dos válidos)</span>
+    <div class="itens">${itens.map(x => `<span class="item"><span class="rampa">${amostra(corCand(cargo, x.u, x.n))}</span>${nomeCand(x.c, x.n)}</span>`).join("")}</div>`;
+}
+
+/* ---------- dica ---------- */
+const dica = $("#dica");
+function mostrarDica(ev, html) {
+  dica.innerHTML = html; dica.hidden = false;
+  const r = dica.getBoundingClientRect();
+  let x = ev.clientX + 14, y = ev.clientY + 14;
+  if (x + r.width > innerWidth - 8) x = ev.clientX - r.width - 14;
+  if (y + r.height > innerHeight - 8) y = ev.clientY - r.height - 14;
+  dica.style.left = x + "px"; dica.style.top = y + "px";
+}
+function esconderDica() { dica.hidden = true; }
+addEventListener("scroll", esconderDica, {passive: true});
+addEventListener("touchstart", e => { if (!e.target.closest("#mapa, .disp")) esconderDica(); }, {passive: true});
+const ln = (a, b) => `<div class="linha"><span>${a}</span><span class="num">${b}</span></div>`;
+function linhasRes(c, l, n = 3) { return resumo(c, l).cands.slice(0, n).map(x => ln(tc(x.nm), pct(x.p))).join(""); }
+function linhasDelta(f, d) {
+  if (!d) return "Sem dados";
+  return ln("Comparecimento", `${pct(d.comp1)} → ${pct(d.comp2)}`) + ln(nomeCand(f.c2, d.A), sinal(d.gA)) + ln(nomeCand(f.c2, d.B), sinal(d.gB));
+}
+function dicaMun(ev, i) {
+  if (i == null) return;
+  const m = D.mun[i], u = m[3];
+  let html = `<b>${tc(m[2])} · ${u.toUpperCase()}</b>`;
+  if (modoDelta()) { const f = finalistas(S.cargo, u); html += f ? linhasDelta(f, delta(f, f.c1.m[i], f.c2.m[i])) : "Sem 2º turno"; }
+  else { const c = corrida(S.cargo, S.turno, u) || (S.cargo === "g" ? corrida("g", 1, u) : null); html += c && c.m[i] ? linhasRes(c, c.m[i]) : "Sem dados"; }
+  mostrarDica(ev, html);
+}
+function dicaUF(ev, u) {
+  let html = `<b>${UFS[u]}</b>`;
+  if (modoDelta()) {
+    const f = finalistas(S.cargo, u);
+    html += f ? linhasDelta(f, S.cargo === "p" ? delta(f, f.c1.uf[u], f.c2.uf[u]) : delta(f, f.c1.tot, f.c2.tot)) : "Decidido no 1º turno";
+  } else if (S.cargo === "p") { const c = corrida("p", S.turno); html += linhasRes(c, c.uf[u]); }
+  else { const c = S.turno === 2 ? D.corridas.g2[u] : D.corridas.g1[u]; html += c ? linhasRes(c, c.tot) : "Decidido no 1º turno"; }
+  mostrarDica(ev, html);
+}
+
+/* ---------- manchete do mapa ---------- */
+const PREP = {ac:"no",al:"em",am:"no",ap:"no",ba:"na",ce:"no",df:"no",es:"no",go:"em",ma:"no",mg:"em",ms:"em",mt:"em",pa:"no",pb:"na",pe:"em",pi:"no",pr:"no",rj:"no",rn:"no",ro:"em",rr:"em",rs:"no",sc:"em",se:"em",sp:"em",to:"no",zz:"no"};
+/* "em São Paulo", "no Acre", "na Bahia", "no Brasil" */
+function emLugar() {
+  if (S.mun != null) return "em " + tc(D.mun[S.mun][2]);
+  if (S.uf) return PREP[S.uf] + " " + (S.uf === "zz" ? "exterior" : UFS[S.uf]);
+  return "no Brasil";
+}
+function contarMunicipios(cargo, uf) {
+  let n = 0, nb = 0, sobe = 0;
+  D.mun.forEach((m, i) => {
+    if (uf ? m[3] !== uf : m[3] === "zz") return;
+    const f = finalistas(cargo, m[3]); if (!f) return;
+    const d = delta(f, f.c1.m[i], f.c2.m[i]); if (!d) return;
+    n++; if (d.saldo < 0) nb++; if (d.dcomp > 0) sobe++;
+  });
+  return {n, nb, sobe};
+}
+function manchete() {
+  const el = $("#manchete"), {cargo, uf, mun, modo} = S;
+  if (modoDelta() && cargo === "g" && !uf) {
+    el.innerHTML = `<h2>Seis estados tiveram 2º turno para governador</h2><p>Clique em um deles para ver o comparecimento e os votos ganhos por município.</p>`; return;
+  }
+  if (modoDelta()) {
+    const x = deltaLugar(cargo, uf, mun);
+    if (!x || !x.d) { el.innerHTML = `<h2>${uf ? UFS[uf] : "Este estado"} decidiu o governo no 1º turno</h2><p>Escolha um dos seis estados com 2º turno, ou volte ao resultado.</p>`; return; }
+    const {f, d} = x, A = nomeCand(f.c2, d.A), B = nomeCand(f.c2, d.B), cont = mun == null ? contarMunicipios(cargo, uf) : null;
+    if (modo === "comp") {
+      el.innerHTML = `<h2>${emLugar().charAt(0).toUpperCase() + emLugar().slice(1)}, o comparecimento ${d.dcomp >= 0 ? "subiu" : "caiu"} ${fmtP.format(Math.abs(d.dcomp))} ${Math.abs(d.dcomp) >= 0.95 && Math.abs(d.dcomp) < 1.05 ? "ponto" : "pontos"} do 1º para o 2º turno</h2>
+        <p>Foi de ${pct(d.comp1)} para ${pct(d.comp2)} do eleitorado, ${sinal(d.c2 - d.c1)} eleitores${cont ? `. Subiu em ${fmt.format(cont.sobe)} dos ${fmt.format(cont.n)} municípios` : ""}.</p>`;
+    } else {
+      el.innerHTML = `<h2>${d.gA >= d.gB ? A : B} ganhou mais votos do 1º para o 2º turno ${emLugar()}</h2>
+        <p>${A} ${d.gA >= 0 ? "ganhou" : "perdeu"} ${milhoes(d.gA)} e ${B} ${d.gB >= 0 ? "ganhou" : "perdeu"} ${milhoes(d.gB)}${cont ? `. ${B} ganhou mais que ${A} em ${fmt.format(cont.nb)} dos ${fmt.format(cont.n)} municípios` : ""}.</p>`;
+    }
+    return;
+  }
+  if (cargo === "g" && !uf) {
+    el.innerHTML = S.turno === 2 ? `<h2>Seis estados escolheram o governador no 2º turno</h2><p>Acre, Amazonas, Distrito Federal, Espírito Santo, Rio Grande do Norte e Tocantins. Os outros 21 decidiram no 1º.</p>`
+      : `<h2>Os 27 governos estaduais no 1º turno</h2><p>Clique num estado para ver os candidatos e os municípios.</p>`;
+    return;
+  }
+  let c = corrida(cargo, S.turno, uf), t = S.turno;
+  if (!c && cargo === "g") { c = corrida("g", 1, uf); t = 1; }
+  const l = linha(c, cargo, uf, mun);
+  if (!l) { el.innerHTML = ""; return; }
+  const r = resumo(c, l), [a, b] = r.cands;
+  el.innerHTML = `<h2>${tc(a.nm)} teve ${fmtP.format(a.p * 100)}% dos votos válidos ${emLugar()} no ${t}º turno</h2>
+    <p>${b ? `${tc(b.nm)} ficou com ${fmtP.format(b.p * 100)}%, uma diferença de ${milhoes(a.v - b.v)} votos.` : ""}</p>`;
+}
+
+/* ---------- cartão do lugar ---------- */
+function cartao() {
+  const el = $("#cartao"), {cargo, turno, uf, mun} = S;
+  if (cargo === "g" && !uf) { el.innerHTML = cartaoGovBR(); return; }
+  if (cargo === "g" && uf === "zz") { el.innerHTML = `<p class="nota">No exterior só se vota para presidente.</p>`; return; }
+  let c = corrida(cargo, turno, uf), t = turno, aviso = "";
+  if (!c && cargo === "g") { c = corrida("g", 1, uf); t = 1; aviso = `<p class="nota">${UFS[uf]} decidiu o governo no 1º turno. Abaixo, o resultado do 1º turno.</p>`; }
+  const l = linha(c, cargo, uf, mun);
+  if (!l) { el.innerHTML = `<p class="nota">Sem resultado para este lugar.</p>`; return; }
+  const r = resumo(c, l), total = mun == null && (cargo === "g" || !uf);
+  const mostra = S.todosCands ? r.cands : r.cands.slice(0, 5);
+  el.innerHTML = `
+    <div><span class="sub">${cargo === "p" ? "Presidente" : "Governador"}, ${t}º turno</span>
+      <h3>${mun != null ? `${tc(D.mun[mun][2])}` : uf ? UFS[uf] : "Brasil"}</h3>
+      ${mun != null ? `<span class="sub">${UFS[uf]}</span>` : ""}</div>
+    ${aviso}
+    <div class="destaque"><span class="grande">${pct(r.comp / r.te)}</span><span>dos ${fmt.format(r.te)} eleitores foram votar</span></div>
+    <div class="cands">${mostra.map(x => `
+      <div class="cand">
+        <span class="nome">${tc(x.nm)} <small>${x.sg}</small>${total && /^eleito/i.test(x.st) ? '<span class="etiqueta">Eleito</span>' : ""}${total && /2º turno/.test(x.st) ? '<span class="etiqueta">Foi ao 2º turno</span>' : ""}</span>
+        <span class="pct num">${fmtP2.format(x.p * 100)}%</span>
+        <span class="barra"><i style="width:${(x.p * 100).toFixed(2)}%;background:${corCand(cargo, uf, x.n)}"></i></span>
+        <span class="votos num">${fmt.format(x.v)} votos</span>
+      </div>`).join("")}</div>
+    ${r.cands.length > 5 ? `<button class="mais" id="ver-cands">${S.todosCands ? "Mostrar só os cinco primeiros" : `Mostrar os ${r.cands.length} candidatos`}</button>` : ""}
+    <div class="quadro">
+      <div><small>Votos válidos</small><b class="num">${fmt.format(r.vv)}</b></div>
+      <div><small>Abstenção</small><b class="num">${pct(1 - r.comp / r.te)}</b></div>
+      <div><small>Brancos</small><b class="num">${pct(r.vb / r.comp)}</b></div>
+      <div><small>Nulos</small><b class="num">${pct(r.vn / r.comp)}</b></div>
+    </div>
+    <p class="nota">Brancos e nulos sobre quem foi votar. Percentual dos candidatos sobre os votos válidos.</p>`;
+  const b = $("#ver-cands");
+  if (b) b.onclick = () => { S.todosCands = !S.todosCands; cartao(); };
+}
+function cartaoGovBR() {
+  const lin = Object.keys(UFS).filter(u => u !== "zz").map(u => ({u, d: decisaoGov(u)})).filter(x => x.d && (S.turno === 1 || x.d.turno === 2));
+  return `<div><span class="sub">Governador</span><h3>${S.turno === 2 ? "Os eleitos no 2º turno" : "Quem venceu em cada estado"}</h3></div>
+    <div class="rolagem"><table class="dados">
+      <thead><tr><th>UF</th><th class="esq">Eleito</th><th>Válidos</th><th>Turno</th></tr></thead>
+      <tbody>${lin.map(x => `<tr data-uf="${x.u}"><td>${x.u.toUpperCase()}</td>
+        <td class="esq"><span class="ponto" style="background:${corCand("g", x.u, x.d.eleito.n)}"></span>${tc(x.d.eleito.nm)} <small>${x.d.eleito.sg}</small></td>
+        <td class="num">${fmtP.format(x.d.eleito.p * 100)}%</td><td>${x.d.turno}º</td></tr>`).join("")}</tbody>
+    </table></div>
+    <p class="nota">Clique num estado, no mapa ou na tabela, para ver os candidatos e os municípios.</p>`;
+}
+
+/* ---------- do 1º para o 2º turno ---------- */
+function turnos() {
+  const el = $("#turnos"), {cargo, uf, mun} = S;
+  const x = deltaLugar(cargo, uf, mun);
+  if (!x || !x.d) { el.innerHTML = ""; el.hidden = true; return; }
+  el.hidden = false;
+  LARG = el.clientWidth < 720 ? el.clientWidth : el.clientWidth * 0.55;
+  const {f, d} = x, A = nomeCand(f.c2, d.A), B = nomeCand(f.c2, d.B), cA = corCand(cargo, uf, d.A), cB = corCand(cargo, uf, d.B);
+  const dC = d.c2 - d.c1, dBN = d.bn2 - d.bn1, novos = d.gA + d.gB;
+  const itens = [
+    ["Votos dos outros candidatos no 1º turno", d.outros1, COR.outros],
+    ["Mudança no comparecimento", dC, dC >= 0 ? COR.sobe : COR.cai],
+    ["Brancos e nulos a menos (ou a mais)", -dBN, COR.tinta2],
+  ];
+  const maxV = Math.max(...itens.map(i => Math.abs(i[1])), Math.abs(d.gA), Math.abs(d.gB), Math.abs(novos), 1);
+  const tira = (v, cor) => `<div class="tira" style="width:${(100 * Math.abs(v) / maxV).toFixed(1)}%;background:${cor};${v < 0 ? "opacity:.55" : ""}"></div>`;
+  const conta = `<table class="conta"><tbody>
+      ${itens.map(([t, v, cor]) => `<tr><td>${t}</td><td class="b">${tira(v, cor)}</td><td class="v num">${sinal(v)}</td></tr>`).join("")}
+      <tr class="soma"><td>Votos novos para os dois finalistas</td><td class="b">${tira(novos, COR.tinta2)}</td><td class="v num">${sinal(novos)}</td></tr>
+      <tr><td><span class="ponto" style="background:${cA}"></span>${A}</td><td class="b">${tira(d.gA, cA)}</td><td class="v num">${sinal(d.gA)}</td></tr>
+      <tr><td><span class="ponto" style="background:${cB}"></span>${B}</td><td class="b">${tira(d.gB, cB)}</td><td class="v num">${sinal(d.gB)}</td></tr>
+    </tbody></table>
+    <p class="nota">A conta fecha: os votos novos dos finalistas são os votos que foram para outros candidatos no 1º turno, mais a mudança no comparecimento, menos a mudança em brancos e nulos.</p>`;
+  const halter = halteres(f, d, cA, cB, A, B);
+  const disp = mun == null ? dispersao(cargo, uf, f, d) : "";
+  el.innerHTML = `
+    <header><span class="rotulo">Do 1º para o 2º turno</span>
+      <h2>De onde vieram os votos novos ${emLugar()}</h2>
+      <p>${A} ${d.gA >= 0 ? "ganhou" : "perdeu"} ${votos(d.gA)} e ${B} ${d.gB >= 0 ? "ganhou" : "perdeu"} ${milhoes(d.gB)}. Foram votar ${milhoes(Math.abs(dC))} eleitores ${dC >= 0 ? "a mais" : "a menos"} que no 1º turno.</p></header>
+    <div class="duas">
+      <div style="display:grid;gap:1.4rem;min-width:0"><div><span class="rotulo">A conta dos votos</span>${conta}</div>${halter}</div>
+      <div style="min-width:0">${disp || `<p class="nota">Escolha o Brasil ou um estado para ver todos os municípios num gráfico só.</p>`}</div>
+    </div>`;
+  el.querySelectorAll(".disp circle[data-i]").forEach(c => {
+    c.addEventListener("mousemove", ev => dicaMun(ev, +c.dataset.i));
+    c.addEventListener("mouseleave", esconderDica);
+    c.addEventListener("click", () => irMun(+c.dataset.i));
+  });
+}
+function halteres(f, d, cA, cB, A, B) {
+  const vv1 = d.a1 + d.b1 + d.outros1, vv2 = d.a2 + d.b2;
+  if (!vv1 || !vv2) return "";
+  const lin = [{nm: A, cor: cA, a: d.a1 / vv1, b: d.a2 / vv2}, {nm: B, cor: cB, a: d.b1 / vv1, b: d.b2 / vv2}];
+  const W = Math.round(Math.max(300, Math.min(420, LARG))), L = W < 380 ? 104 : 120, R = 16, H = 26 + 34 * lin.length, x = d3.scaleLinear([0, 1], [L, W - R]);
+  return `<div><span class="rotulo">Votos válidos, 1º e 2º turno</span>
+    <svg class="halter" viewBox="0 0 ${W} ${H}" role="img" aria-label="Fatia dos válidos de cada finalista no 1º e no 2º turno">
+      ${[0, .25, .5, .75, 1].map(t => `<line class="grade" x1="${x(t)}" x2="${x(t)}" y1="14" y2="${H}"/><text x="${x(t)}" y="10" text-anchor="middle">${t * 100}%</text>`).join("")}
+      ${lin.map((r, i) => { const y = 32 + i * 34; return `<text x="0" y="${y + 4}" class="forte">${r.nm}</text>
+        <line x1="${x(r.a)}" x2="${x(r.b)}" y1="${y}" y2="${y}" stroke="${r.cor}" stroke-width="2"/>
+        <circle cx="${x(r.a)}" cy="${y}" r="5" fill="var(--papel)" stroke="${r.cor}" stroke-width="2"/>
+        <circle cx="${x(r.b)}" cy="${y}" r="5.5" fill="${r.cor}" stroke="var(--papel)" stroke-width="2"/>`; }).join("")}
+    </svg>
+    <p class="nota">Círculo vazado é o 1º turno, cheio é o 2º. ${A}: ${fmtP.format(lin[0].a * 100)}% → ${fmtP.format(lin[0].b * 100)}%. ${B}: ${fmtP.format(lin[1].a * 100)}% → ${fmtP.format(lin[1].b * 100)}%.</p></div>`;
+}
+function dispersao(cargo, uf, f, dTot) {
+  const pts = [];
+  D.mun.forEach((m, i) => {
+    if (uf ? m[3] !== uf : m[3] === "zz") return;
+    const ff = finalistas(cargo, m[3]); if (!ff) return;
+    const d = delta(ff, ff.c1.m[i], ff.c2.m[i]); if (!d || !d.c2) return;
+    pts.push({i, te: d.te2, x: d.dcomp, y: d.rel * 100, d});
+  });
+  if (pts.length < 3) return "";
+  const A = nomeCand(f.c2, dTot.A), B = nomeCand(f.c2, dTot.B);
+  const cA = corCand(cargo, uf, dTot.A), cB = corCand(cargo, uf, dTot.B);
+  const q = (arr, p) => d3.quantile(arr.slice().sort(d3.ascending), p);
+  const xs = pts.map(p => p.x), ys = pts.map(p => p.y);
+  let x0 = Math.min(q(xs, 0.005), -1), x1 = Math.max(q(xs, 0.995), 1), y0 = Math.min(q(ys, 0.005), -1), y1 = Math.max(q(ys, 0.995), 1);
+  const W = Math.round(Math.max(320, Math.min(560, LARG))), H = W < 480 ? 380 : 400, m = {l: 40, r: 10, t: 26, b: 40};
+  const x = d3.scaleLinear([x0, x1], [m.l, W - m.r]).nice(), y = d3.scaleLinear([y0, y1], [H - m.b, m.t]).nice();
+  const r = d3.scaleSqrt([0, d3.max(pts, p => p.te)], [1.4, uf ? 16 : 14]);
+  const cx = v => x(Math.max(x.domain()[0], Math.min(x.domain()[1], v))), cy = v => y(Math.max(y.domain()[0], Math.min(y.domain()[1], v)));
+  pts.sort((a, b) => b.te - a.te);
+  /* frase: com quem ficaram os votos novos onde o comparecimento subiu e onde caiu */
+  /* saldo de cada grupo, em votos e em % de quem votou no 2º turno */
+  const grupo = sel => { const g = pts.filter(sel), s = d3.sum(g, p => p.d.saldo), c = d3.sum(g, p => p.d.c2); return {n: g.length, s, r: c ? s / c : 0}; };
+  const sub = grupo(p => p.x > 0), cai = grupo(p => p.x <= 0);
+  const parte = (g, onde) => `${onde} (${fmt.format(g.n)} ${g.n === 1 ? "município" : "municípios"}), <b>${g.s >= 0 ? A : B}</b> ganhou <b>${votos(g.s)}</b> a mais que ${g.s >= 0 ? B : A}, ou <b>${fmtP.format(Math.abs(g.r) * 100)}%</b> de quem votou no 2º turno`;
+  const frase = sub.n && cai.n ? `<p class="frase">${parte(sub, "Onde o comparecimento subiu")}. ${parte(cai, "Onde caiu ou ficou igual")}.</p>`
+    : sub.n ? `<p class="frase">${parte(sub, "O comparecimento subiu em todos os municípios")}.</p>` : "";
+  return `<span class="rotulo">Cada bolha é um município, do tamanho do eleitorado</span>
+    <svg class="disp" viewBox="0 0 ${W} ${H}" role="img" aria-label="Variação do comparecimento contra o saldo de votos ganhos, por município">
+      ${x.ticks(W < 480 ? 4 : 6).map(t => `<line class="grade" x1="${x(t)}" x2="${x(t)}" y1="${m.t}" y2="${H - m.b}"/><text x="${x(t)}" y="${H - m.b + 15}" text-anchor="middle">${t === 0 ? "0" : (t > 0 ? "+" : "−") + fmt.format(Math.abs(t))}</text>`).join("")}
+      ${y.ticks(6).map(t => `<line class="grade" x1="${m.l}" x2="${W - m.r}" y1="${y(t)}" y2="${y(t)}"/><text x="${m.l - 6}" y="${y(t) + 4}" text-anchor="end">${t === 0 ? "0" : fmt.format(Math.abs(t)) + "%"}</text>`).join("")}
+      <line class="zero" x1="${x(0)}" x2="${x(0)}" y1="${m.t}" y2="${H - m.b}"/>
+      <line class="zero" x1="${m.l}" x2="${W - m.r}" y1="${y(0)}" y2="${y(0)}"/>
+      ${pts.map(p => `<circle data-i="${p.i}" cx="${cx(p.x).toFixed(1)}" cy="${cy(p.y).toFixed(1)}" r="${r(p.te).toFixed(1)}" fill="${p.y >= 0 ? cA : cB}" fill-opacity=".55" stroke="var(--papel)" stroke-width=".6"/>`).join("")}
+      <text class="eixo" x="${m.l + 4}" y="${m.t - 10}">↑ ${A} ganhou mais</text>
+      <text class="eixo" x="${m.l + 4}" y="${H - m.b - 6}">↓ ${B} ganhou mais</text>
+      <text class="eixo" x="${W - m.r}" y="${H - 4}" text-anchor="end">Comparecimento, variação (p.p.) →</text>
+    </svg>
+    <p class="nota">No eixo vertical, os votos ganhos por ${A} menos os ganhos por ${B}, em % de quem votou no 2º turno. Valores extremos ficam presos na borda. Clique numa bolha para abrir o município.</p>
+    ${frase}`;
+}
+
+/* ---------- tabela ---------- */
+function linhasTabela() {
+  const {cargo, turno, uf} = S, out = [];
+  D.mun.forEach((m, i) => {
+    if (uf ? m[3] !== uf : m[3] === "zz" && cargo === "g") return;
+    if (modoDelta()) {
+      const f = finalistas(cargo, m[3]); if (!f) return;
+      const d = delta(f, f.c1.m[i], f.c2.m[i]); if (!d) return;
+      out.push({i, nm: tc(m[2]), uf: m[3], te: d.te2, c1: d.comp1, c2: d.comp2, dc: d.dcomp, gA: d.gA, gB: d.gB, saldo: d.saldo, rel: d.rel, A: d.A, B: d.B, f});
+      return;
+    }
+    let c = corrida(cargo, turno, m[3]);
+    if (!c && cargo === "g" && uf) c = corrida("g", 1, m[3]);
+    if (!c || !c.m[i]) return;
+    const r = resumo(c, c.m[i]);
+    out.push({i, nm: tc(m[2]), uf: m[3], te: r.te, comp: r.comp / r.te, a: r.cands[0], venc: r.cands[0].nm, pa: r.cands[0].p, marg: r.cands[0].p - (r.cands[1] ? r.cands[1].p : 0)});
+  });
+  return out;
+}
+function tabela() {
+  const el = $("#tabela"), {cargo} = S;
+  let rows = linhasTabela();
+  const f = norm(S.filtro.trim());
+  if (f) rows = rows.filter(r => norm(r.nm).includes(f));
+  const {col, dir} = S.sort;
+  rows.sort((p, q) => { const a = p[col], b = q[col]; return (a < b ? -1 : a > b ? 1 : 0) * dir || q.te - p.te; });
+  const total = rows.length, vis = rows.slice(0, S.limite);
+  const th = (k, t, esq, extra) => `<th class="${esq ? "esq" : ""} ${extra || ""}"><button data-col="${k}" ${col === k ? `aria-sort="${dir > 0 ? "ascending" : "descending"}"` : ""}>${t}</button></th>`;
+  const colUF = S.uf ? "" : th("uf", "UF");
+  let cab, corpo;
+  if (modoDelta()) {
+    const fx = finalistas(cargo, S.uf) || (rows[0] && rows[0].f);
+    const A = fx ? nomeCand(fx.c2, fx.c2.cand[0][0]) : "1º", B = fx ? nomeCand(fx.c2, fx.c2.cand[1][0]) : "2º";
+    const um = cargo === "p" || S.uf;
+    cab = th("nm", "Município", true) + colUF + th("te", "Eleitorado") + th("c1", "Comparec. 1º", false, "opc") + th("c2", "Comparec. 2º", false, "opc") + th("dc", "Variação") +
+      th("gA", um ? `Ganho ${A}` : "Ganho 1º colocado") + th("gB", um ? `Ganho ${B}` : "Ganho 2º colocado") + th("rel", "Saldo");
+    corpo = vis.map(r => `<tr data-i="${r.i}" tabindex="0"><td>${r.nm}</td>${S.uf ? "" : `<td>${r.uf.toUpperCase()}</td>`}
+      <td class="num">${fmt.format(r.te)}</td><td class="num opc">${pct(r.c1)}</td><td class="num opc">${pct(r.c2)}</td><td class="num">${sinalP(r.dc)} p.p.</td>
+      <td class="num">${sinal(r.gA)}</td><td class="num">${sinal(r.gB)}</td>
+      <td class="esq"><span class="ponto" style="background:${corCand(cargo, r.uf, r.saldo >= 0 ? r.A : r.B)}"></span>${nomeCand(r.f.c2, r.saldo >= 0 ? r.A : r.B)} ${sinal(Math.abs(r.saldo))}</td></tr>`).join("");
+  } else {
+    cab = th("nm", "Município", true) + colUF + th("te", "Eleitorado") + th("comp", "Comparec.", false, "opc") + th("venc", "Mais votado", true) + th("pa", "Válidos") + th("marg", "Vantagem", false, "opc");
+    corpo = vis.map(r => `<tr data-i="${r.i}" tabindex="0"><td>${r.nm}</td>${S.uf ? "" : `<td>${r.uf.toUpperCase()}</td>`}
+      <td class="num">${fmt.format(r.te)}</td><td class="num opc">${pct(r.comp)}</td>
+      <td class="esq"><span class="ponto" style="background:${corCand(cargo, r.uf, r.a.n)}"></span>${tc(r.a.nm)}</td>
+      <td class="num">${fmtP.format(r.pa * 100)}%</td><td class="num opc">${fmtP.format(r.marg * 100)} p.p.</td></tr>`).join("");
+  }
+  el.innerHTML = `
+    <div class="tabela-topo">
+      <div><span class="rotulo">Municípios ${S.uf ? (S.uf === "zz" ? "no exterior" : "de " + UFS[S.uf]) : "do Brasil"}</span>
+        <h2>${fmt.format(total)} ${S.uf === "zz" ? "cidades" : "municípios"}</h2></div>
+      <input type="search" id="filtro" class="campo" placeholder="Filtrar a tabela" aria-label="Filtrar municípios na tabela">
+    </div>
+    <div class="rolagem"><table class="dados"><thead><tr>${cab}</tr></thead><tbody>${corpo}</tbody></table></div>
+    ${total > S.limite ? `<button class="mais" id="mais-linhas">Mostrar mais ${fmt.format(Math.min(100, total - S.limite))} de ${fmt.format(total - S.limite)} restantes</button>` : ""}
+    <p class="nota">${modoDelta() ? "Saldo é quanto um finalista ganhou de votos a mais que o outro entre os turnos. Clique no título da coluna para ordenar." : "Vantagem é a diferença, em pontos percentuais dos válidos, entre o primeiro e o segundo colocados. Clique no título da coluna para ordenar."}</p>`;
+  const fi = $("#filtro");
+  fi.value = S.filtro;
+  fi.oninput = () => { S.filtro = fi.value; S.limite = 50; const pos = fi.selectionStart; tabela(); const n = $("#filtro"); n.focus(); n.setSelectionRange(pos, pos); };
+  el.querySelectorAll("th button").forEach(b => b.onclick = () => {
+    const k = b.dataset.col, texto = ["nm", "uf", "venc"].includes(k);
+    S.sort = {col: k, dir: S.sort.col === k ? -S.sort.dir : (texto ? 1 : -1)}; tabela();
+  });
+  el.querySelectorAll("tbody tr").forEach(tr => { tr.onclick = () => irMun(+tr.dataset.i); tr.onkeydown = e => { if (e.key === "Enter") irMun(+tr.dataset.i); }; });
+  const mais = $("#mais-linhas");
+  if (mais) mais.onclick = () => { S.limite += 100; tabela(); };
+}
+
+/* ---------- navegação ---------- */
+function irUF(uf) { S.uf = uf; S.mun = null; S.limite = 50; S.filtro = ""; S.todosCands = false; tudo(true); }
+function irMun(i) {
+  const mudou = S.uf !== D.mun[i][3];
+  S.uf = D.mun[i][3]; S.mun = i; S.todosCands = false; tudo(mudou);
+  $("#cartao").scrollIntoView({behavior: matchMedia("(prefers-reduced-motion: reduce)").matches ? "auto" : "smooth", block: "nearest"});
+}
+function irBR() { S.uf = null; S.mun = null; S.limite = 50; S.filtro = ""; S.todosCands = false; tudo(true); }
+function trilha() {
+  const t = $("#trilha"), partes = [S.uf ? `<button data-ir="br">Brasil</button>` : "<span>Brasil</span>"];
+  if (S.uf) partes.push(S.mun != null ? `<button data-ir="uf">${UFS[S.uf]}</button>` : `<span>${UFS[S.uf]}</span>`);
+  if (S.mun != null) partes.push(`<span>${tc(D.mun[S.mun][2])}</span>`);
+  t.innerHTML = partes.join('<span aria-hidden="true">›</span>');
+  t.querySelectorAll("button").forEach(b => b.onclick = () => b.dataset.ir === "br" ? irBR() : irUF(S.uf));
+}
+function controles() {
+  /* os modos de turno a turno só existem onde houve 2º turno */
+  const temDelta = S.cargo === "p" || (S.uf && D.corridas.g2[S.uf]) || !S.uf;
+  if (!temDelta && modoDelta()) S.modo = "res";
+  document.querySelectorAll("[data-cargo]").forEach(b => b.setAttribute("aria-pressed", b.dataset.cargo === S.cargo));
+  document.querySelectorAll("[data-turno]").forEach(b => { b.setAttribute("aria-pressed", +b.dataset.turno === S.turno && !modoDelta()); b.disabled = modoDelta(); });
+  document.querySelectorAll("[data-modo]").forEach(b => { b.setAttribute("aria-pressed", b.dataset.modo === S.modo); b.disabled = b.dataset.modo !== "res" && !temDelta; });
+  const sel = $("#sel-uf");
+  [...sel.options].forEach(o => { if (o.value === "zz") o.disabled = S.cargo === "g"; });
+  sel.value = S.uf || "";
+  const vt = $("#ver-todos");
+  if (vt) { vt.hidden = !!S.uf; vt.textContent = S.verTodos ? "Ver por estado" : "Ver todos os municípios"; }
+}
+function tudo(mapa) {
+  controles(); trilha(); manchete();
+  if (mapa) desenharMapa(); else d3.selectAll("#mapa path.mun").classed("sel", d => d.properties.idx === S.mun);
+  cartao(); turnos(); tabela();
+}
+
+/* ---------- busca ---------- */
+function busca() {
+  const inp = $("#busca"), ul = $("#sugestoes");
+  let ativo = -1;
+  const fechar = () => { ul.hidden = true; inp.setAttribute("aria-expanded", "false"); ativo = -1; };
+  const escolher = i => { fechar(); inp.value = ""; irMun(i); };
+  inp.oninput = () => {
+    const q = norm(inp.value.trim());
+    if (q.length < 2) return fechar();
+    const achados = indiceBusca.filter(x => x.k.startsWith(q)).concat(indiceBusca.filter(x => !x.k.startsWith(q) && x.k.includes(q))).slice(0, 12);
+    ul.innerHTML = achados.map((x, j) => `<li role="option" id="sg-${j}" data-i="${x.i}"><span>${tc(D.mun[x.i][2])}</span><span>${D.mun[x.i][3].toUpperCase()}</span></li>`).join("") || `<li aria-disabled="true">Nenhuma cidade com esse nome</li>`;
+    ul.hidden = false; inp.setAttribute("aria-expanded", "true"); ativo = -1;
+    ul.querySelectorAll("li[data-i]").forEach(li => li.onmousedown = e => { e.preventDefault(); escolher(+li.dataset.i); });
+  };
+  inp.onkeydown = e => {
+    const lis = ul.querySelectorAll("li[data-i]");
+    if (e.key === "ArrowDown" || e.key === "ArrowUp") {
+      e.preventDefault(); if (!lis.length) return;
+      ativo = (ativo + (e.key === "ArrowDown" ? 1 : -1) + lis.length) % lis.length;
+      lis.forEach((li, j) => li.setAttribute("aria-selected", j === ativo));
+      inp.setAttribute("aria-activedescendant", "sg-" + ativo);
+    } else if (e.key === "Enter") { const li = lis[Math.max(0, ativo)]; if (li) escolher(+li.dataset.i); }
+    else if (e.key === "Escape") fechar();
+  };
+  inp.onblur = () => setTimeout(fechar, 100);
+}
+
+async function iniciar() {
+  lerCores();
+  [D, TOPO] = await Promise.all([fetch("dados/eleicao.json").then(r => r.json()), fetch("dados/malha.json").then(r => r.json())]);
+  ORDEM_P = D.corridas.p2.cand.map(c => c[0]);
+  D.corridas.p1.cand.forEach(c => { if (!ORDEM_P.includes(c[0])) ORDEM_P.push(c[0]); });
+  D.mun.forEach((m, i) => { if (m[1]) ibgeIdx.set(m[1], i); indiceBusca.push({i, k: norm(m[2])}); });
+  topojson.feature(TOPO, TOPO.objects.municipios).features.forEach(f => {
+    const uf = f.properties.uf.toLowerCase();
+    f.properties.idx = ibgeIdx.get(f.properties.cod); f.properties.uf = uf;
+    if (!ufMuns.has(uf)) ufMuns.set(uf, []);
+    ufMuns.get(uf).push(f);
+  });
+  ufGeo = topojson.feature(TOPO, TOPO.objects.estados).features;
+  ufGeo.forEach(f => f.properties.sg = f.properties.uf.toLowerCase());
+
+  const sel = $("#sel-uf");
+  sel.innerHTML = `<option value="">Brasil inteiro</option>` + Object.entries(UFS).sort((a, b) => a[1].localeCompare(b[1], "pt")).map(([k, v]) => `<option value="${k}">${v}</option>`).join("");
+  sel.onchange = () => sel.value ? irUF(sel.value) : irBR();
+  document.querySelectorAll("[data-cargo]").forEach(b => b.onclick = () => {
+    S.cargo = b.dataset.cargo; if (S.cargo === "g" && S.uf === "zz") { S.uf = null; S.mun = null; } S.todosCands = false; tudo(true);
+  });
+  document.querySelectorAll("[data-turno]").forEach(b => b.onclick = () => { S.turno = +b.dataset.turno; S.todosCands = false; tudo(true); });
+  document.querySelectorAll("[data-modo]").forEach(b => b.onclick = () => {
+    S.modo = b.dataset.modo;
+    if (S.modo !== "res" && !["te", "nm", "uf", "c1", "c2", "dc", "gA", "gB", "rel"].includes(S.sort.col)) S.sort = {col: "te", dir: -1};
+    if (S.modo === "res" && !["te", "nm", "uf", "comp", "venc", "pa", "marg"].includes(S.sort.col)) S.sort = {col: "te", dir: -1};
+    tudo(true);
+  });
+
+  $("#corpo").className = "";
+  $("#corpo").innerHTML = `
+    <div class="palco">
+      <section class="mapa-caixa" aria-label="Mapa">
+        <div class="manchete" id="manchete"></div>
+        <div class="barra-mapa"><button class="chave" id="ver-todos">Ver todos os municípios</button></div>
+        <div id="mapa-area"></div>
+        <div class="legenda" id="legenda"></div>
+      </section>
+      <aside class="cartao" id="cartao" aria-live="polite"></aside>
+    </div>
+    <section class="turnos" id="turnos"></section>
+    <section class="tabela-box" id="tabela"></section>`;
+  $("#ver-todos").onclick = () => { S.verTodos = !S.verTodos; tudo(true); };
+  $("#cartao").addEventListener("click", e => { const tr = e.target.closest("tr[data-uf]"); if (tr) irUF(tr.dataset.uf); });
+  busca();
+  /* link direto: #sp, #g2-rn, #p1-mg, #comp, #saldo-sp */
+  const h = (location.hash || "").slice(1).match(/^(comp|saldo)?-?(p|g)?(1|2)?-?([a-z]{2})?$/);
+  if (h) { if (h[1]) S.modo = h[1]; if (h[2]) S.cargo = h[2]; if (h[3]) S.turno = +h[3]; if (h[4] && UFS[h[4]]) S.uf = h[4]; }
+  tudo(true);
+  let largura = innerWidth;
+  addEventListener("resize", () => { if (Math.abs(innerWidth - largura) > 60) { largura = innerWidth; tudo(true); } });
+  new MutationObserver(() => { lerCores(); tudo(true); }).observe(document.documentElement, {attributes: true, attributeFilter: ["data-theme"]});
+}
+iniciar().catch(e => { $("#corpo").textContent = "Não foi possível carregar os dados: " + e.message; });
+</script>
