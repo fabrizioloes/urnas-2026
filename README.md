@@ -1,4 +1,4 @@
-# Urnas de 2026
+# Eleições 2026
 
 Resultado oficial das eleições gerais de 2026 para presidente e governador, nos dois turnos, por estado e por
 município, e o que mudou entre o 1º e o 2º turno (comparecimento e votos ganhos por cada finalista).
